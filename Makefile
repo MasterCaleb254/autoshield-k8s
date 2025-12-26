@@ -42,16 +42,16 @@ test-dataset:
 	
 train-model:
 	@echo "Training CNN-LSTM model..."
-	python scripts/train_model.py
+	python src/scripts/train_model.py
 
 evaluate-model:
 	@echo "Evaluating model..."
-	python scripts/evaluate_model.py
+	python src/scripts/evaluate_model.py
 
 optimize-model:
 	@echo "Optimizing model for inference..."
-	python scripts/optimize_model.py  # We'll create this next
+	python src/scripts/optimize_model.py  # We'll create this next
 
 benchmark-latency:
 	@echo "Benchmarking inference latency..."
-	python scripts/benchmark_latency.py
+	python src/scripts/benchmark_latency.py
