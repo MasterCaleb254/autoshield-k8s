@@ -64,13 +64,19 @@ class ModelTrainer:
         Returns:
             train_loader, val_loader
         """
-        # For now, we treat each sample as a sequence of length 1
-        # TODO: Implement proper sequence creation from time-series data
-        X_reshaped = X.reshape(-1, 1, X.shape[1])  # [n_samples, 1, n_features]
+        # Create sequences of specified length
+        n_samples = X.shape[0] - sequence_length + 1
+        X_sequences = np.zeros((n_samples, sequence_length, X.shape[1]))
+        y_sequences = np.zeros(n_samples, dtype=np.int64)
+        
+        for i in range(n_samples):
+            X_sequences[i] = X[i:i+sequence_length]
+            # Use the label of the last element in the sequence
+            y_sequences[i] = y[i+sequence_length-1]
         
         # Convert to PyTorch tensors
-        X_tensor = torch.FloatTensor(X_reshaped)
-        y_tensor = torch.LongTensor(y)
+        X_tensor = torch.FloatTensor(X_sequences)  # [n_samples, sequence_length, n_features]
+        y_tensor = torch.LongTensor(y_sequences)
         
         # Create dataset
         dataset = TensorDataset(X_tensor, y_tensor)
@@ -212,8 +218,11 @@ class ModelTrainer:
         logger.info(f"Training samples: {len(X_train)}, Validation samples: {len(X_val)}")
         
         # Prepare data
-        train_loader, val_loader = self.prepare_data(
+        train_loader, _ = self.prepare_data(
             X_train, y_train, batch_size=batch_size
+        )
+        val_loader, _ = self.prepare_data(
+            X_val, y_val, batch_size=batch_size
         )
         
         # Criterion and optimizer
