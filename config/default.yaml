@@ -1,0 +1,33 @@
+# AutoShield-K8s Default Configuration
+
+feature_extractor:
+  window_size: 20
+  emit_interval_ms: 1000
+  hubble_namespace: "kube-system"
+  max_flows_per_second: 10000
+
+detector:
+  model_path: "data/models/cnns-lstm/latest.pth"
+  inference_timeout_ms: 10
+  confidence_threshold: 0.85
+  gpu_enabled: false
+
+policy:
+  cooldown_seconds: 300
+  max_actions_per_hour: 50
+  require_approval: false
+
+actuator:
+  actions:
+    - name: "network_policy"
+      enabled: true
+    - name: "pod_isolation"
+      enabled: true
+    - name: "pod_termination"
+      enabled: false  # More aggressive
+  safety_rollback_minutes: 15
+
+observability:
+  metrics_port: 9090
+  log_level: "INFO"
+  explainability_enabled: true
