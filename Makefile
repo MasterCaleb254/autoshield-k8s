@@ -38,3 +38,20 @@ explore-data:
 test-dataset:
 	@echo "Testing dataset quality..."
 	python src/scripts/run_test_dataset.py -v
+
+	
+train-model:
+	@echo "Training CNN-LSTM model..."
+	python scripts/train_model.py
+
+evaluate-model:
+	@echo "Evaluating model..."
+	python scripts/evaluate_model.py
+
+optimize-model:
+	@echo "Optimizing model for inference..."
+	python scripts/optimize_model.py  # We'll create this next
+
+benchmark-latency:
+	@echo "Benchmarking inference latency..."
+	python scripts/benchmark_latency.py
