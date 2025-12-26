@@ -37,4 +37,4 @@ explore-data:
 
 test-dataset:
 	@echo "Testing dataset quality..."
-	python -m pytest tests/test_dataset.py -v
+	python src/scripts/run_test_dataset.py -v
