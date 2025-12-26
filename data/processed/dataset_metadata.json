@@ -1,0 +1,28 @@
+{
+  "num_classes": 4,
+  "class_names": [
+    "NORMAL",
+    "LATERAL_MOVEMENT",
+    "PORT_SCAN",
+    "SYN_FLOOD"
+  ],
+  "feature_names": [
+    "flow_count",
+    "bytes_sent_kb",
+    "bytes_received_kb",
+    "syn_count",
+    "ack_count",
+    "rst_count",
+    "fin_count",
+    "total_duration_s",
+    "avg_interarrival_ms",
+    "std_interarrival_ms",
+    "failed_conn_ratio",
+    "unique_ports"
+  ],
+  "num_features": 12,
+  "samples_per_class": 1000,
+  "train_size": 2400,
+  "val_size": 800,
+  "test_size": 800
+}
