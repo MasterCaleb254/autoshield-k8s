@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "autoshield-k8s"
+version = "0.1.0"
+description = "Autonomous Kubernetes Intrusion Defense System"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+torch = "^2.0"
+fastapi = "^0.104"
+kubernetes = "^28.0"
+prometheus-client = "^0.19"
+cilium = "^0.4"
+pydantic = "^2.5"
+
+[tool.black]
+line-length = 88
+
+[tool.mypy]
+python_version = "3.9"
