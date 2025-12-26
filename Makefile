@@ -28,7 +28,7 @@ clean:
 
 generate-data:
 	@echo "Generating training dataset..."
-	python scripts/generate_training_data.py
+	python src/scripts/generate_training_data.py
 	@echo "✅ Dataset generated"
 
 explore-data:
