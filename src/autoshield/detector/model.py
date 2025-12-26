@@ -130,24 +130,25 @@ class CNNLSTMDetector(nn.Module):
             attention_weights: Attention weights for interpretability [batch_size, sequence_length]
         """
         batch_size = x.shape[0]
+        seq_len = x.shape[1]
         
         # 1. Feature expansion
         x = self.feature_expansion(x)  # [batch, seq_len, 32]
         
-        # 2. Prepare for CNN: swap dimensions for Conv1d
-        # Conv1d expects [batch, channels, length]
-        x = x.transpose(1, 2)  # [batch, 32, seq_len]
+        # 2. Reshape for CNN: [batch, channels, length]
+        # We want to convolve over the sequence length (time) dimension
+        x = x.permute(0, 2, 1)  # [batch, 32, seq_len]
         
         # 3. CNN layers
-        x = self.conv1(x)  # [batch, 64, seq_len]
+        x = self.conv1(x)  # [batch, 64, seq_len - kernel_size + 1]
         x = self.bn1(x)
         x = F.relu(x)
-        x = self.pool(x)   # [batch, 64, seq_len//2]
+        x = self.pool(x)   # [batch, 64, (seq_len - kernel_size + 1) // 2]
         
-        x = self.conv2(x)  # [batch, 128, seq_len//2]
+        x = self.conv2(x)  # [batch, 128, ...]
         x = self.bn2(x)
         x = F.relu(x)
-        x = self.pool(x)   # [batch, 128, seq_len//4]
+        x = self.pool(x)   # [batch, 128, ...]
         
         # 4. Prepare for LSTM: reshape back to sequence
         x = x.transpose(1, 2)  # [batch, seq_len//4, 128]
