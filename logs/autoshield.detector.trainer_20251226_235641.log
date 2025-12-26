@@ -1,0 +1,71 @@
+2025-12-26 23:56:42 - autoshield.detector.trainer - INFO - Starting training for cnn_lstm model
+2025-12-26 23:56:42 - autoshield.detector.trainer - INFO - Device: cpu
+2025-12-26 23:56:42 - autoshield.detector.trainer - INFO - Training samples: 2400, Validation samples: 800
+2025-12-26 23:56:51 - autoshield.detector.trainer - INFO - Epoch 1 [0/60] Loss: 1.3805
+2025-12-26 23:56:56 - autoshield.detector.trainer - INFO - Epoch 1 [50/60] Loss: 0.8444
+2025-12-26 23:56:57 - autoshield.detector.trainer - INFO - Epoch 1/50: Train Loss: 1.1989, Train Acc: 42.70%, Val Loss: 1.0247, Val Acc: 52.56%
+2025-12-26 23:56:57 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251226_235641\best_epoch_1_acc_52.56.pth
+2025-12-26 23:56:57 - autoshield.detector.trainer - INFO - Epoch 2 [0/60] Loss: 0.5442
+2025-12-26 23:57:07 - autoshield.detector.trainer - INFO - Epoch 2 [50/60] Loss: 0.0483
+2025-12-26 23:57:08 - autoshield.detector.trainer - INFO - Epoch 2/50: Train Loss: 0.2727, Train Acc: 89.18%, Val Loss: 0.0607, Val Acc: 97.76%
+2025-12-26 23:57:08 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251226_235641\best_epoch_2_acc_97.76.pth
+2025-12-26 23:57:08 - autoshield.detector.trainer - INFO - Epoch 3 [0/60] Loss: 0.1307
+2025-12-26 23:57:16 - autoshield.detector.trainer - INFO - Epoch 3 [50/60] Loss: 0.0028
+2025-12-26 23:57:17 - autoshield.detector.trainer - INFO - Epoch 3/50: Train Loss: 0.0546, Train Acc: 98.42%, Val Loss: 0.0120, Val Acc: 99.84%
+2025-12-26 23:57:17 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251226_235641\best_epoch_3_acc_99.84.pth
+2025-12-26 23:57:17 - autoshield.detector.trainer - INFO - Epoch 4 [0/60] Loss: 0.2595
+2025-12-26 23:57:27 - autoshield.detector.trainer - INFO - Epoch 4 [50/60] Loss: 0.0038
+2025-12-26 23:57:28 - autoshield.detector.trainer - INFO - Epoch 4/50: Train Loss: 0.0766, Train Acc: 98.32%, Val Loss: 0.1901, Val Acc: 97.44%
+2025-12-26 23:57:28 - autoshield.detector.trainer - INFO - Epoch 5 [0/60] Loss: 0.0568
+2025-12-26 23:57:33 - autoshield.detector.trainer - INFO - Epoch 5 [50/60] Loss: 0.0047
+2025-12-26 23:57:35 - autoshield.detector.trainer - INFO - Epoch 5/50: Train Loss: 0.0337, Train Acc: 98.90%, Val Loss: 0.0351, Val Acc: 99.36%
+2025-12-26 23:57:35 - autoshield.detector.trainer - INFO - Epoch 6 [0/60] Loss: 0.0010
+2025-12-26 23:57:39 - autoshield.detector.trainer - INFO - Epoch 6 [50/60] Loss: 0.0006
+2025-12-26 23:57:41 - autoshield.detector.trainer - INFO - Epoch 6/50: Train Loss: 0.0133, Train Acc: 99.63%, Val Loss: 0.0149, Val Acc: 99.68%
+2025-12-26 23:57:42 - autoshield.detector.trainer - INFO - Epoch 7 [0/60] Loss: 0.0001
+2025-12-26 23:57:45 - autoshield.detector.trainer - INFO - Epoch 7 [50/60] Loss: 0.0003
+2025-12-26 23:57:46 - autoshield.detector.trainer - INFO - Epoch 7/50: Train Loss: 0.0122, Train Acc: 99.84%, Val Loss: 0.0308, Val Acc: 99.52%
+2025-12-26 23:57:46 - autoshield.detector.trainer - INFO - Epoch 8 [0/60] Loss: 0.0001
+2025-12-26 23:57:51 - autoshield.detector.trainer - INFO - Epoch 8 [50/60] Loss: 0.0000
+2025-12-26 23:57:52 - autoshield.detector.trainer - INFO - Epoch 8/50: Train Loss: 0.0110, Train Acc: 99.68%, Val Loss: 0.0254, Val Acc: 99.68%
+2025-12-26 23:57:52 - autoshield.detector.trainer - INFO - Epoch 9 [0/60] Loss: 0.0001
+2025-12-26 23:57:56 - autoshield.detector.trainer - INFO - Epoch 9 [50/60] Loss: 0.0002
+2025-12-26 23:57:58 - autoshield.detector.trainer - INFO - Epoch 9/50: Train Loss: 0.0328, Train Acc: 99.37%, Val Loss: 0.0142, Val Acc: 99.84%
+2025-12-26 23:57:58 - autoshield.detector.trainer - INFO - Epoch 10 [0/60] Loss: 0.0005
+2025-12-26 23:58:05 - autoshield.detector.trainer - INFO - Epoch 10 [50/60] Loss: 0.0001
+2025-12-26 23:58:06 - autoshield.detector.trainer - INFO - Epoch 10/50: Train Loss: 0.0033, Train Acc: 99.95%, Val Loss: 0.0135, Val Acc: 99.84%
+2025-12-26 23:58:06 - autoshield.detector.trainer - INFO - Epoch 11 [0/60] Loss: 0.0104
+2025-12-26 23:58:13 - autoshield.detector.trainer - INFO - Epoch 11 [50/60] Loss: 0.0001
+2025-12-26 23:58:17 - autoshield.detector.trainer - INFO - Epoch 11/50: Train Loss: 0.0004, Train Acc: 100.00%, Val Loss: 0.0009, Val Acc: 100.00%
+2025-12-26 23:58:17 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251226_235641\best_epoch_11_acc_100.00.pth
+2025-12-26 23:58:20 - autoshield.detector.trainer - INFO - Epoch 12 [0/60] Loss: 0.0000
+2025-12-26 23:58:38 - autoshield.detector.trainer - INFO - Epoch 12 [50/60] Loss: 0.0000
+2025-12-26 23:58:40 - autoshield.detector.trainer - INFO - Epoch 12/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0034, Val Acc: 99.84%
+2025-12-26 23:58:40 - autoshield.detector.trainer - INFO - Epoch 13 [0/60] Loss: 0.0002
+2025-12-26 23:58:47 - autoshield.detector.trainer - INFO - Epoch 13 [50/60] Loss: 0.0000
+2025-12-26 23:58:51 - autoshield.detector.trainer - INFO - Epoch 13/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0024, Val Acc: 99.84%
+2025-12-26 23:58:51 - autoshield.detector.trainer - INFO - Epoch 14 [0/60] Loss: 0.0000
+2025-12-26 23:59:01 - autoshield.detector.trainer - INFO - Epoch 14 [50/60] Loss: 0.0000
+2025-12-26 23:59:04 - autoshield.detector.trainer - INFO - Epoch 14/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0061, Val Acc: 99.84%
+2025-12-26 23:59:05 - autoshield.detector.trainer - INFO - Epoch 15 [0/60] Loss: 0.0000
+2025-12-26 23:59:13 - autoshield.detector.trainer - INFO - Epoch 15 [50/60] Loss: 0.0000
+2025-12-26 23:59:14 - autoshield.detector.trainer - INFO - Epoch 15/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0115, Val Acc: 99.84%
+2025-12-26 23:59:14 - autoshield.detector.trainer - INFO - Epoch 16 [0/60] Loss: 0.0004
+2025-12-26 23:59:19 - autoshield.detector.trainer - INFO - Epoch 16 [50/60] Loss: 0.0000
+2025-12-26 23:59:22 - autoshield.detector.trainer - INFO - Epoch 16/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0065, Val Acc: 99.84%
+2025-12-26 23:59:23 - autoshield.detector.trainer - INFO - Epoch 17 [0/60] Loss: 0.0000
+2025-12-26 23:59:28 - autoshield.detector.trainer - INFO - Epoch 17 [50/60] Loss: 0.0000
+2025-12-26 23:59:30 - autoshield.detector.trainer - INFO - Epoch 17/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0112, Val Acc: 99.84%
+2025-12-26 23:59:31 - autoshield.detector.trainer - INFO - Epoch 18 [0/60] Loss: 0.0001
+2025-12-26 23:59:37 - autoshield.detector.trainer - INFO - Epoch 18 [50/60] Loss: 0.0000
+2025-12-26 23:59:38 - autoshield.detector.trainer - INFO - Epoch 18/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0088, Val Acc: 99.84%
+2025-12-26 23:59:38 - autoshield.detector.trainer - INFO - Epoch 19 [0/60] Loss: 0.0000
+2025-12-26 23:59:45 - autoshield.detector.trainer - INFO - Epoch 19 [50/60] Loss: 0.0000
+2025-12-26 23:59:47 - autoshield.detector.trainer - INFO - Epoch 19/50: Train Loss: 0.0000, Train Acc: 100.00%, Val Loss: 0.0171, Val Acc: 99.68%
+2025-12-26 23:59:47 - autoshield.detector.trainer - INFO - Epoch 20 [0/60] Loss: 0.0001
+2025-12-26 23:59:51 - autoshield.detector.trainer - INFO - Epoch 20 [50/60] Loss: 0.0000
+2025-12-26 23:59:53 - autoshield.detector.trainer - INFO - Epoch 20/50: Train Loss: 0.0000, Train Acc: 100.00%, Val Loss: 0.0184, Val Acc: 99.68%
+2025-12-26 23:59:53 - autoshield.detector.trainer - INFO - Epoch 21 [0/60] Loss: 0.0000
+2025-12-26 23:59:59 - autoshield.detector.trainer - INFO - Epoch 21 [50/60] Loss: 0.0000
+2025-12-27 00:00:03 - autoshield.detector.trainer - INFO - Epoch 21/50: Train Loss: 0.0000, Train Acc: 100.00%, Val Loss: 0.0136, Val Acc: 99.68%
+2025-12-27 00:00:03 - autoshield.detector.trainer - INFO - Early stopping at epoch 21

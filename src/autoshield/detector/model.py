@@ -37,9 +37,9 @@ class CNNLSTMDetector(nn.Module):
         # First, expand features to channels for CNN
         self.feature_expansion = nn.Linear(input_features, 32)
         
-        # CNN layers (treat sequence as channels for temporal convolution)
+        # CNN layers (process each time step independently)
         self.conv1 = nn.Conv1d(
-            in_channels=sequence_length,  # Each time step as a channel
+            in_channels=32,  # From feature expansion
             out_channels=64,
             kernel_size=3,
             padding=1
@@ -55,16 +55,19 @@ class CNNLSTMDetector(nn.Module):
         self.bn1 = nn.BatchNorm1d(64) if use_batch_norm else nn.Identity()
         self.bn2 = nn.BatchNorm1d(128) if use_batch_norm else nn.Identity()
         
-        # Pooling
-        self.pool = nn.MaxPool1d(kernel_size=2)
+        # Pooling with padding to prevent sequence length from becoming too small
+        self.pool1 = nn.MaxPool1d(kernel_size=2, stride=1, padding=1)  # Reduces sequence length by 1
+        self.pool2 = nn.MaxPool1d(kernel_size=2, stride=2)  # Reduces sequence length by half
         
         # Calculate CNN output size
         # After two conv layers with pooling
-        conv_output_size = 128 * (32 // 4)  # 32 features reduced by 2 poolings
+        # Sequence length is reduced by pooling layers (// 4 for 2 pooling layers)
+        self.sequence_length_after_pooling = sequence_length // 4
+        self.conv_output_size = 128  # Number of channels after conv layers
         
         # LSTM for temporal patterns
         self.lstm = nn.LSTM(
-            input_size=conv_output_size,
+            input_size=self.conv_output_size,
             hidden_size=hidden_size,
             num_layers=2,
             batch_first=True,
@@ -139,16 +142,16 @@ class CNNLSTMDetector(nn.Module):
         # We want to convolve over the sequence length (time) dimension
         x = x.permute(0, 2, 1)  # [batch, 32, seq_len]
         
-        # 3. CNN layers
-        x = self.conv1(x)  # [batch, 64, seq_len - kernel_size + 1]
+        # 3. CNN layers with careful pooling
+        x = self.conv1(x)  # [batch, 64, seq_len]
         x = self.bn1(x)
         x = F.relu(x)
-        x = self.pool(x)   # [batch, 64, (seq_len - kernel_size + 1) // 2]
+        x = self.pool1(x)  # [batch, 64, seq_len] (reduced by 1 due to padding='valid' in pool1)
         
-        x = self.conv2(x)  # [batch, 128, ...]
+        x = self.conv2(x)  # [batch, 128, seq_len - kernel_size + 1 + 2*padding]
         x = self.bn2(x)
         x = F.relu(x)
-        x = self.pool(x)   # [batch, 128, ...]
+        x = self.pool2(x)  # [batch, 128, (seq_len - 1) // 2] (approximately seq_len // 2)
         
         # 4. Prepare for LSTM: reshape back to sequence
         x = x.transpose(1, 2)  # [batch, seq_len//4, 128]

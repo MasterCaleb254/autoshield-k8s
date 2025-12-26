@@ -1,0 +1,3 @@
+2025-12-26 23:55:03 - autoshield.detector.trainer - INFO - Starting training for cnn_lstm model
+2025-12-26 23:55:03 - autoshield.detector.trainer - INFO - Device: cpu
+2025-12-26 23:55:03 - autoshield.detector.trainer - INFO - Training samples: 2400, Validation samples: 800
