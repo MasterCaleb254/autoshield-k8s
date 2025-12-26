@@ -25,3 +25,16 @@ deploy:
 clean:
 	rm -rf build/ dist/ *.egg-info
 	find . -name "*.pyc" -delete
+
+generate-data:
+	@echo "Generating training dataset..."
+	python scripts/generate_training_data.py
+	@echo "✅ Dataset generated"
+
+explore-data:
+	@echo "Starting data exploration notebook..."
+	jupyter notebook notebooks/01-data-exploration.ipynb
+
+test-dataset:
+	@echo "Testing dataset quality..."
+	python -m pytest tests/test_dataset.py -v
