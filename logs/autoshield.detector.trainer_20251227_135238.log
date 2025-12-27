@@ -1,0 +1,20 @@
+2025-12-27 13:52:46 - autoshield.detector.trainer - INFO - Starting training for optimized model
+2025-12-27 13:52:46 - autoshield.detector.trainer - INFO - Device: cpu
+2025-12-27 13:52:46 - autoshield.detector.trainer - INFO - Training samples: 2400, Validation samples: 800
+2025-12-27 13:53:07 - autoshield.detector.trainer - INFO - Epoch 0 [0/34] Loss: 1.6789, LR: 0.001000
+2025-12-27 13:53:27 - autoshield.detector.trainer - INFO - Epoch 1 [0/34] Loss: 1.2254, LR: 0.001000
+2025-12-27 13:53:48 - autoshield.detector.trainer - INFO - Epoch 2 [0/34] Loss: 0.5819, LR: 0.001000
+2025-12-27 13:54:12 - autoshield.detector.trainer - INFO - Epoch 3 [0/34] Loss: 0.2714, LR: 0.001000
+2025-12-27 13:54:32 - autoshield.detector.trainer - INFO - Epoch 4 [0/34] Loss: 0.6937, LR: 0.001000
+2025-12-27 13:54:51 - autoshield.detector.trainer - INFO - Epoch 5 [0/34] Loss: 0.8397, LR: 0.001000
+2025-12-27 13:55:11 - autoshield.detector.trainer - INFO - Epoch 6 [0/34] Loss: 0.0878, LR: 0.001000
+2025-12-27 13:55:40 - autoshield.detector.trainer - INFO - Epoch 7 [0/34] Loss: 0.2350, LR: 0.001000
+2025-12-27 13:56:02 - autoshield.detector.trainer - INFO - Epoch 8 [0/34] Loss: 0.1855, LR: 0.001000
+2025-12-27 13:56:44 - autoshield.detector.trainer - INFO - Epoch 9 [0/34] Loss: 0.0823, LR: 0.001000
+2025-12-27 13:58:27 - autoshield.detector.trainer - INFO - Epoch 10 [0/34] Loss: 0.0703, LR: 0.000500
+2025-12-27 13:59:31 - autoshield.detector.trainer - INFO - Epoch 11 [0/34] Loss: 0.9244, LR: 0.000500
+2025-12-27 14:00:16 - autoshield.detector.trainer - INFO - Epoch 12 [0/34] Loss: 0.8071, LR: 0.000500
+2025-12-27 14:01:04 - autoshield.detector.trainer - INFO - Epoch 13 [0/34] Loss: 0.0243, LR: 0.000250
+2025-12-27 14:01:47 - autoshield.detector.trainer - INFO - Epoch 14 [0/34] Loss: 0.0452, LR: 0.000250
+2025-12-27 14:02:22 - autoshield.detector.trainer - INFO - Early stopping at epoch 15
+2025-12-27 14:02:23 - autoshield.detector.trainer - INFO - Training completed. Best validation accuracy: 100.00%
