@@ -1,0 +1,56 @@
+2025-12-27 09:47:20 - autoshield.detector.trainer - INFO - Starting training for cnn_lstm model
+2025-12-27 09:47:20 - autoshield.detector.trainer - INFO - Device: cpu
+2025-12-27 09:47:20 - autoshield.detector.trainer - INFO - Training samples: 2400, Validation samples: 800
+2025-12-27 09:47:44 - autoshield.detector.trainer - INFO - Epoch 1 [0/60] Loss: 1.3723
+2025-12-27 09:48:04 - autoshield.detector.trainer - INFO - Epoch 1 [50/60] Loss: 1.3331
+2025-12-27 09:48:06 - autoshield.detector.trainer - INFO - Epoch 1/50: Train Loss: 1.3573, Train Acc: 29.10%, Val Loss: 1.0291, Val Acc: 55.45%
+2025-12-27 09:48:06 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251227_094720\best_epoch_1_acc_55.45.pth
+2025-12-27 09:48:06 - autoshield.detector.trainer - INFO - Epoch 2 [0/60] Loss: 1.0561
+2025-12-27 09:48:23 - autoshield.detector.trainer - INFO - Epoch 2 [50/60] Loss: 0.2600
+2025-12-27 09:48:26 - autoshield.detector.trainer - INFO - Epoch 2/50: Train Loss: 0.5424, Train Acc: 75.58%, Val Loss: 0.3151, Val Acc: 85.42%
+2025-12-27 09:48:26 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251227_094720\best_epoch_2_acc_85.42.pth
+2025-12-27 09:48:26 - autoshield.detector.trainer - INFO - Epoch 3 [0/60] Loss: 0.2939
+2025-12-27 09:48:45 - autoshield.detector.trainer - INFO - Epoch 3 [50/60] Loss: 0.2605
+2025-12-27 09:48:52 - autoshield.detector.trainer - INFO - Epoch 3/50: Train Loss: 0.1663, Train Acc: 95.22%, Val Loss: 0.0109, Val Acc: 99.84%
+2025-12-27 09:48:52 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251227_094720\best_epoch_3_acc_99.84.pth
+2025-12-27 09:48:52 - autoshield.detector.trainer - INFO - Epoch 4 [0/60] Loss: 0.0151
+2025-12-27 09:49:07 - autoshield.detector.trainer - INFO - Epoch 4 [50/60] Loss: 0.0004
+2025-12-27 09:49:11 - autoshield.detector.trainer - INFO - Epoch 4/50: Train Loss: 0.0448, Train Acc: 99.05%, Val Loss: 0.0559, Val Acc: 98.72%
+2025-12-27 09:49:11 - autoshield.detector.trainer - INFO - Epoch 5 [0/60] Loss: 0.0026
+2025-12-27 09:49:24 - autoshield.detector.trainer - INFO - Epoch 5 [50/60] Loss: 0.1026
+2025-12-27 09:49:27 - autoshield.detector.trainer - INFO - Epoch 5/50: Train Loss: 0.0145, Train Acc: 99.63%, Val Loss: 0.0001, Val Acc: 100.00%
+2025-12-27 09:49:27 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251227_094720\best_epoch_5_acc_100.00.pth
+2025-12-27 09:49:27 - autoshield.detector.trainer - INFO - Epoch 6 [0/60] Loss: 0.0010
+2025-12-27 09:49:54 - autoshield.detector.trainer - INFO - Epoch 6 [50/60] Loss: 0.0008
+2025-12-27 09:50:10 - autoshield.detector.trainer - INFO - Epoch 6/50: Train Loss: 0.0347, Train Acc: 99.63%, Val Loss: 0.0549, Val Acc: 99.20%
+2025-12-27 09:50:12 - autoshield.detector.trainer - INFO - Epoch 7 [0/60] Loss: 0.0045
+2025-12-27 09:50:37 - autoshield.detector.trainer - INFO - Epoch 7 [50/60] Loss: 0.0004
+2025-12-27 09:50:39 - autoshield.detector.trainer - INFO - Epoch 7/50: Train Loss: 0.0160, Train Acc: 99.68%, Val Loss: 0.0254, Val Acc: 99.68%
+2025-12-27 09:50:39 - autoshield.detector.trainer - INFO - Epoch 8 [0/60] Loss: 0.0003
+2025-12-27 09:51:00 - autoshield.detector.trainer - INFO - Epoch 8 [50/60] Loss: 0.1885
+2025-12-27 09:51:05 - autoshield.detector.trainer - INFO - Epoch 8/50: Train Loss: 0.0511, Train Acc: 99.05%, Val Loss: 0.0877, Val Acc: 97.76%
+2025-12-27 09:51:05 - autoshield.detector.trainer - INFO - Epoch 9 [0/60] Loss: 0.0072
+2025-12-27 09:51:15 - autoshield.detector.trainer - INFO - Epoch 9 [50/60] Loss: 0.0027
+2025-12-27 09:51:19 - autoshield.detector.trainer - INFO - Epoch 9/50: Train Loss: 0.0111, Train Acc: 99.79%, Val Loss: 0.0590, Val Acc: 99.20%
+2025-12-27 09:51:19 - autoshield.detector.trainer - INFO - Epoch 10 [0/60] Loss: 0.1832
+2025-12-27 09:51:32 - autoshield.detector.trainer - INFO - Epoch 10 [50/60] Loss: 0.0035
+2025-12-27 09:51:36 - autoshield.detector.trainer - INFO - Epoch 10/50: Train Loss: 0.0354, Train Acc: 99.42%, Val Loss: 0.0001, Val Acc: 100.00%
+2025-12-27 09:51:36 - autoshield.detector.trainer - INFO - Epoch 11 [0/60] Loss: 0.0013
+2025-12-27 09:51:46 - autoshield.detector.trainer - INFO - Epoch 11 [50/60] Loss: 0.0003
+2025-12-27 09:51:49 - autoshield.detector.trainer - INFO - Epoch 11/50: Train Loss: 0.0740, Train Acc: 98.84%, Val Loss: 0.0011, Val Acc: 99.84%
+2025-12-27 09:51:49 - autoshield.detector.trainer - INFO - Epoch 12 [0/60] Loss: 0.0007
+2025-12-27 09:52:00 - autoshield.detector.trainer - INFO - Epoch 12 [50/60] Loss: 0.0002
+2025-12-27 09:52:02 - autoshield.detector.trainer - INFO - Epoch 12/50: Train Loss: 0.0013, Train Acc: 99.95%, Val Loss: 0.0000, Val Acc: 100.00%
+2025-12-27 09:52:02 - autoshield.detector.trainer - INFO - Epoch 13 [0/60] Loss: 0.0001
+2025-12-27 09:52:12 - autoshield.detector.trainer - INFO - Epoch 13 [50/60] Loss: 0.0001
+2025-12-27 09:52:15 - autoshield.detector.trainer - INFO - Epoch 13/50: Train Loss: 0.0003, Train Acc: 100.00%, Val Loss: 0.0000, Val Acc: 100.00%
+2025-12-27 09:52:15 - autoshield.detector.trainer - INFO - Epoch 14 [0/60] Loss: 0.0002
+2025-12-27 09:52:23 - autoshield.detector.trainer - INFO - Epoch 14 [50/60] Loss: 0.0005
+2025-12-27 09:52:27 - autoshield.detector.trainer - INFO - Epoch 14/50: Train Loss: 0.0002, Train Acc: 100.00%, Val Loss: 0.0000, Val Acc: 100.00%
+2025-12-27 09:52:27 - autoshield.detector.trainer - INFO - Epoch 15 [0/60] Loss: 0.0002
+2025-12-27 09:52:36 - autoshield.detector.trainer - INFO - Epoch 15 [50/60] Loss: 0.0003
+2025-12-27 09:52:38 - autoshield.detector.trainer - INFO - Epoch 15/50: Train Loss: 0.0001, Train Acc: 100.00%, Val Loss: 0.0000, Val Acc: 100.00%
+2025-12-27 09:52:38 - autoshield.detector.trainer - INFO - Early stopping at epoch 15
+2025-12-27 09:52:54 - autoshield.detector.trainer - INFO - Model saved to data\models\cnn-lstm\20251227_094720\final_model.pth
+2025-12-27 09:52:54 - autoshield.detector.trainer - INFO - Training history saved to data\models\cnn-lstm\20251227_094720\training_history.json
+2025-12-27 09:52:54 - autoshield.detector.trainer - INFO - Training completed. Best validation accuracy: 100.00%
