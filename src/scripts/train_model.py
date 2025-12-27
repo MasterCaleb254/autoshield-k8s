@@ -1,7 +1,7 @@
 # scripts/train_model.py
 #!/usr/bin/env python3
 """
-Train the CNN-LSTM model for AutoShield-K8s.
+Train the Optimized CNN-LSTM model for AutoShield-K8s.
 """
 import sys
 import os
@@ -20,26 +20,27 @@ def main():
     
     # Configuration
     config = {
-        'model_type': 'cnn_lstm',  # 'cnn_lstm' or 'lightweight'
+        'model_type': 'optimized',  # Using the optimized model
         'model_config': {
             'input_features': 12,
-            'sequence_length': 1,  # Using single time step for now
+            'sequence_length': 20,  # Updated sequence length
             'num_classes': 4,
-            'hidden_size': 64,
-            'dropout_rate': 0.3,
+            'hidden_size': 32,      # Reduced hidden size
+            'dropout_rate': 0.2,    # Adjusted dropout
             'use_batch_norm': True
         },
         'training': {
             'num_epochs': 50,
-            'batch_size': 32,
+            'batch_size': 64,       # Increased batch size
             'learning_rate': 0.001,
             'weight_decay': 1e-4,
-            'patience': 10
+            'patience': 5,          # Reduced patience for early stopping
+            'min_delta': 0.001      # Minimum improvement for early stopping
         },
-        'output_dir': f"data/models/cnn-lstm/{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        'output_dir': f"data/models/optimized/{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     }
     
-    print("AutoShield-K8s: CNN-LSTM Model Training")
+    print("AutoShield-K8s: Optimized CNN-LSTM Model Training")
     print("=" * 50)
     
     # Load dataset
@@ -80,6 +81,7 @@ def main():
         learning_rate=config['training']['learning_rate'],
         weight_decay=config['training']['weight_decay'],
         patience=config['training']['patience'],
+        min_delta=config['training']['min_delta'],
         output_dir=config['output_dir']
     )
     
@@ -103,7 +105,8 @@ def main():
     print("=" * 50)
     print(f"Best validation accuracy: {results['best_accuracy']:.2f}%")
     print(f"Test accuracy: {test_metrics['accuracy']:.4f}")
-    print(f"Test F1-score: {test_metrics['f1_weighted']:.4f}")
+    if 'f1_weighted' in test_metrics:
+        print(f"Test F1-score: {test_metrics['f1_weighted']:.4f}")
     print(f"Average inference latency: {test_metrics['latency_ms']['mean']:.2f} ms")
     print(f"P95 inference latency: {test_metrics['latency_ms']['p95']:.2f} ms")
     print(f"\nModel saved to: {config['output_dir']}")
@@ -113,7 +116,7 @@ def main():
         print("\n✅ SUCCESS: Model meets latency requirement (<1ms P95)")
     else:
         print(f"\n⚠️ WARNING: Model P95 latency ({test_metrics['latency_ms']['p95']:.2f} ms) exceeds 1ms target")
-        print("Consider using lightweight model or optimization techniques.")
+        print("Consider using model optimization techniques or hardware acceleration.")
     
     return 0
 
