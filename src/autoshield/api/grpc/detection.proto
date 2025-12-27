@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package autoshield.detection;
+
+service DetectionService {
+    rpc Predict (PredictionRequest) returns (PredictionResponse) {}
+    rpc PredictStream (stream PredictionRequest) returns (stream PredictionResponse) {}
+    rpc PredictBatch (BatchPredictionRequest) returns (BatchPredictionResponse) {}
+    rpc HealthCheck (HealthRequest) returns (HealthResponse) {}
+}
+
+message FlowFeatures {
+    int32 flow_count = 1;
+    int64 bytes_sent = 2;
+    int64 bytes_received = 3;
+    int32 syn_count = 4;
+    int32 ack_count = 5;
+    int32 rst_count = 6;
+    int32 fin_count = 7;
+    float total_duration_ms = 8;
+    float avg_interarrival_ms = 9;
+    float std_interarrival_ms = 10;
+    float failed_conn_ratio = 11;
+    int32 unique_ports = 12;
+}
+
+message PredictionRequest {
+    string window_id = 1;
+    string src_pod = 2;
+    string dst_pod = 3;
+    FlowFeatures features = 4;
+    string timestamp = 5;
+}
+
+message BatchPredictionRequest {
+    repeated PredictionRequest windows = 1;
+}
+
+message PredictionResponse {
+    string window_id = 1;
+    string src_pod = 2;
+    string dst_pod = 3;
+    string predicted_class = 4;
+    float confidence = 5;
+    repeated float probabilities = 6;
+    float latency_ms = 7;
+    string timestamp = 8;
+    string explanation = 9;
+}
+
+message BatchPredictionResponse {
+    repeated PredictionResponse predictions = 1;
+    float batch_latency_ms = 2;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+    string status = 1;
+    bool model_loaded = 2;
+    string device = 3;
+    float avg_latency_ms = 4;
+}

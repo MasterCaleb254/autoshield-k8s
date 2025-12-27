@@ -1,12 +1,23 @@
-.PHONY: help install test build deploy clean
+.PHONY: help install test build deploy clean build-inference deploy-inference test-inference run-api generate-data explore-data test-dataset train-model evaluate-model optimize-model benchmark-latency
 
 help:
 	@echo "AutoShield-K8s Commands:"
 	@echo "  install     Install dependencies"
 	@echo "  test        Run all tests"
 	@echo "  build       Build Docker images"
+	@echo "  build-inference  Build inference service image"
 	@echo "  deploy      Deploy to Kubernetes"
+	@echo "  deploy-inference Deploy inference service to Kubernetes"
+	@echo "  test-inference   Run inference integration tests"
+	@echo "  run-api     Start FastAPI inference API server"
 	@echo "  monitor     Start monitoring stack"
+	@echo "  generate-data Generate training dataset"
+	@echo "  explore-data  Start data exploration notebook"
+	@echo "  test-dataset  Test dataset quality"
+	@echo "  train-model   Train CNN-LSTM model"
+	@echo "  evaluate-model Evaluate model"
+	@echo "  optimize-model Optimize model for inference"
+	@echo "  benchmark-latency Benchmark inference latency"
 
 install:
 	pip install -r requirements.txt
@@ -19,8 +30,25 @@ build:
 	docker build -f docker/feature-extractor.Dockerfile -t autoshield/feature-extractor:latest .
 	docker build -f docker/inference-service.Dockerfile -t autoshield/inference:latest .
 
+build-inference:
+	@echo "Building inference service..."
+	docker build -f docker/inference-service.Dockerfile -t autoshield/inference:latest .
+
 deploy:
 	kubectl apply -f deployment/
+
+deploy-inference:
+	@echo "Deploying inference service..."
+	kubectl apply -f deployment/inference-service.yaml
+	@echo "✅ Inference service deployed"
+
+test-inference:
+	@echo "Testing inference service..."
+	python -m pytest tests/test_integration.py -v
+
+run-api:
+	@echo "Starting API server..."
+	uvicorn autoshield.api.server:app --app-dir src --host 0.0.0.0 --port 8000 --reload
 
 clean:
 	rm -rf build/ dist/ *.egg-info
