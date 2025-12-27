@@ -120,9 +120,10 @@ class OptimizedCNNLSTM(nn.Module):
         device = next(self.parameters()).device
         x = x.to(device)
 
-        # Warmup
-        for _ in range(10):
-            _ = self.predict(x[:1])
+        # Warmup (forward only)
+        with torch.no_grad():
+            for _ in range(10):
+                _ = self.forward(x[:1])
 
         latencies = []
         with torch.no_grad():
@@ -131,15 +132,15 @@ class OptimizedCNNLSTM(nn.Module):
                     start = torch.cuda.Event(enable_timing=True)
                     end = torch.cuda.Event(enable_timing=True)
                     start.record()
-                    _ = self.predict(x[:1])
+                    _ = self.forward(x[:1])
                     end.record()
                     torch.cuda.synchronize()
                     latencies.append(start.elapsed_time(end))
                 else:
                     import time
-                    t0 = time.time()
-                    _ = self.predict(x[:1])
-                    latencies.append((time.time() - t0) * 1000)
+                    t0 = time.perf_counter()
+                    _ = self.forward(x[:1])
+                    latencies.append((time.perf_counter() - t0) * 1000)
 
         latencies = np.array(latencies)
         return {

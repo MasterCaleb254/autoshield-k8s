@@ -1,0 +1,3 @@
+2025-12-27 11:16:18 - autoshield.detector.trainer - INFO - Starting training for optimized model
+2025-12-27 11:16:18 - autoshield.detector.trainer - INFO - Device: cpu
+2025-12-27 11:16:18 - autoshield.detector.trainer - INFO - Training samples: 2400, Validation samples: 800
