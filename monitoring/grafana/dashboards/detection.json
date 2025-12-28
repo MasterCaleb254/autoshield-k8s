@@ -1,4 +1,3 @@
-# monitoring/grafana/dashboards/detection.json
 {
   "title": "AutoShield Detection Details",
   "tags": ["autoshield", "detection", "security"],

@@ -1,4 +1,3 @@
-# monitoring/grafana/dashboards/overview.json
 {
   "title": "AutoShield-K8s Overview",
   "tags": ["autoshield", "security", "kubernetes"],
