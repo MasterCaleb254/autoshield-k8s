@@ -1,0 +1,94 @@
+# deployment/dashboard.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+  namespace: autoshield-system
+  labels:
+    app: autoshield
+    component: dashboard
+spec:
+  ports:
+  - port: 8081
+    targetPort: 8081
+    name: http
+  - port: 9090
+    targetPort: 9090
+    name: metrics
+  selector:
+    app: autoshield
+    component: dashboard
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: autoshield-system
+  labels:
+    app: autoshield
+    component: dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autoshield
+      component: dashboard
+  template:
+    metadata:
+      labels:
+        app: autoshield
+        component: dashboard
+    spec:
+      serviceAccountName: dashboard
+      containers:
+      - name: dashboard
+        image: autoshield/dashboard:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: PROMETHEUS_URL
+          value: "http://prometheus-operated.monitoring:9090"
+        - name: ALERTMANAGER_URL
+          value: "http://alertmanager-operated.monitoring:9093"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: grafana-dashboards
+          mountPath: /app/monitoring/grafana/dashboards
+          readOnly: true
+      volumes:
+      - name: grafana-dashboards
+        configMap:
+          name: grafana-dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: autoshield-system
+data:
+  autoshield-overview.json: |
+    # [Paste the overview.json content here]
+  autoshield-detection.json: |
+    # [Paste the detection.json content here]
