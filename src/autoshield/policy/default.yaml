@@ -1,0 +1,164 @@
+# config/policies/default.yaml
+version: "1.0.0"
+name: "AutoShield-K8s Default Policy"
+description: "Default policy for autonomous intrusion response"
+
+default_action:
+  action_type: "alert_only"
+  parameters:
+    channel: "slack"
+    priority: "medium"
+
+rules:
+  # Lateral Movement Detection
+  - id: "lat-mov-001"
+    name: "Lateral Movement - High Confidence"
+    description: "Detect lateral movement attempts with high confidence"
+    attack_class: "LATERAL_MOVEMENT"
+    severity: "high"
+    confidence_threshold: 0.95
+    cooldown_seconds: 600  # 10 minutes
+    blast_radius_limit: 2
+    enabled: true
+    actions:
+      - action_type: "network_policy"
+        aggressiveness: 8
+        parameters:
+          direction: "egress"
+          ports: "any"
+          protocol: "any"
+        metadata:
+          description: "Block all egress traffic from compromised pod"
+          k8s_resource: "NetworkPolicy"
+      
+      - action_type: "pod_isolation"
+        aggressiveness: 9
+        parameters:
+          isolation_duration_minutes: 30
+          reason: "suspected_lateral_movement"
+        metadata:
+          description: "Isolate pod from network"
+          k8s_resource: "NetworkPolicy"
+
+  - id: "lat-mov-002"
+    name: "Lateral Movement - Medium Confidence"
+    description: "Detect lateral movement attempts with medium confidence"
+    attack_class: "LATERAL_MOVEMENT"
+    severity: "medium"
+    confidence_threshold: 0.85
+    cooldown_seconds: 300  # 5 minutes
+    blast_radius_limit: 3
+    enabled: true
+    actions:
+      - action_type: "traffic_throttle"
+        aggressiveness: 5
+        parameters:
+          rate_limit: "100kbps"
+          burst_limit: "200kbps"
+          direction: "egress"
+        metadata:
+          description: "Throttle egress traffic from suspicious pod"
+          k8s_resource: "CiliumNetworkPolicy"
+
+  # Port Scanning Detection
+  - id: "port-scan-001"
+    name: "Port Scan - Aggressive"
+    description: "Detect aggressive port scanning"
+    attack_class: "PORT_SCAN"
+    severity: "medium"
+    confidence_threshold: 0.90
+    cooldown_seconds: 300
+    blast_radius_limit: 5
+    enabled: true
+    actions:
+      - action_type: "network_policy"
+        aggressiveness: 7
+        parameters:
+          direction: "egress"
+          ports: "1-1024"  # Restrict to well-known ports only
+          protocol: "tcp"
+        metadata:
+          description: "Restrict scanner pod to well-known ports"
+          k8s_resource: "NetworkPolicy"
+
+  # SYN Flood Detection
+  - id: "syn-flood-001"
+    name: "SYN Flood Attack"
+    description: "Detect SYN flood (DoS) attacks"
+    attack_class: "SYN_FLOOD"
+    severity: "critical"
+    confidence_threshold: 0.92
+    cooldown_seconds: 60  # Quick response for DoS
+    blast_radius_limit: 1
+    enabled: true
+    actions:
+      - action_type: "traffic_throttle"
+        aggressiveness: 9
+        parameters:
+          rate_limit: "10kbps"
+          burst_limit: "20kbps"
+          direction: "ingress"
+        metadata:
+          description: "Severely throttle traffic to target pod"
+          k8s_resource: "CiliumNetworkPolicy"
+      
+      - action_type: "pod_termination"
+        aggressiveness: 10
+        parameters:
+          grace_period_seconds: 0  # Force termination
+          reason: "syn_flood_source"
+        metadata:
+          description: "Terminate source pod if identified"
+          k8s_resource: "Pod"
+
+  # Brute Force Detection (if we add this class)
+  - id: "brute-force-001"
+    name: "Brute Force Attempts"
+    description: "Detect authentication brute force attempts"
+    attack_class: "BRUTE_FORCE"
+    severity: "high"
+    confidence_threshold: 0.88
+    cooldown_seconds: 600
+    blast_radius_limit: 2
+    enabled: true
+    actions:
+      - action_type: "network_policy"
+        aggressiveness: 6
+        parameters:
+          direction: "ingress"
+          ports: "443"
+          protocol: "tcp"
+          source_ip: "pod_ip"  # Block specific source
+        metadata:
+          description: "Block brute force source"
+          k8s_resource: "NetworkPolicy"
+
+  # Data Exfiltration (if we add this class)
+  - id: "data-exfil-001"
+    name: "Data Exfiltration Attempt"
+    description: "Detect large unauthorized data transfers"
+    attack_class: "DATA_EXFILTRATION"
+    severity: "critical"
+    confidence_threshold: 0.93
+    cooldown_seconds: 300
+    blast_radius_limit: 2
+    enabled: true
+    actions:
+      - action_type: "network_policy"
+        aggressiveness: 9
+        parameters:
+          direction: "egress"
+          ports: "any"
+          protocol: "any"
+          destination_cidr: "0.0.0.0/0"
+        metadata:
+          description: "Block all external traffic from pod"
+          k8s_resource: "NetworkPolicy"
+      
+      - action_type: "alert_only"
+        aggressiveness: 5
+        parameters:
+          channel: "pagerduty"
+          priority: "critical"
+        metadata:
+          description: "Critical alert for data exfiltration"
