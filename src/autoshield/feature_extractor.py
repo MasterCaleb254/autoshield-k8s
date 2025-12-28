@@ -6,6 +6,8 @@ from datetime import datetime
 from typing import Optional
 import sys
 import signal
+import time
+import os
 
 from .models import FlowMetadata
 from .aggregator import SlidingWindowAggregator
@@ -71,7 +73,12 @@ class FeatureExtractionService:
             self._send_to_kafka(window_dict)
         
         # TODO: Send to ML inference service
-        self._send_to_detection_service(window_dict)
+        try:
+            asyncio.get_running_loop().create_task(self._send_to_detection_service(window_dict))
+        except RuntimeError:
+            # No running event loop in this thread/context.
+            # Avoid blocking the flow pipeline.
+            pass
         
         logger.debug(f"Window {window.window_id}: {features}")
     
@@ -80,10 +87,61 @@ class FeatureExtractionService:
         # Implementation for Kafka producer
         pass
     
-    def _send_to_detection_service(self, window_dict: dict):
-        """Send window to ML detection service"""
-        # Implementation for gRPC/REST call
-        print(f"[DETECTION INPUT] {json.dumps(window_dict)}")
+    async def _send_to_detection_service(self, window_dict: dict):
+        """Send window to ML detection service via REST API"""
+        try:
+            import aiohttp
+
+            endpoint = os.getenv(
+                "INFERENCE_URL",
+                "http://inference-service.autoshield-system:8000/predict"
+            )
+
+            feats = window_dict.get("features")
+            if feats is None:
+                return
+
+            payload = {
+                "window_id": window_dict.get("window_id"),
+                "src_pod": window_dict.get("src_pod"),
+                "dst_pod": window_dict.get("dst_pod"),
+                "features": {
+                    "flow_count": int(feats[0]),
+                    "bytes_sent": int(float(feats[1]) * 1000),
+                    "bytes_received": int(float(feats[2]) * 1000),
+                    "syn_count": int(float(feats[3])),
+                    "ack_count": int(float(feats[4])),
+                    "rst_count": int(float(feats[5])),
+                    "fin_count": int(float(feats[6])),
+                    "total_duration_ms": float(feats[7]) * 1000,
+                    "avg_interarrival_ms": float(feats[8]),
+                    "std_interarrival_ms": float(feats[9]),
+                    "failed_conn_ratio": float(feats[10]),
+                    "unique_ports": int(float(feats[11])),
+                },
+                "timestamp": window_dict.get("start_time"),
+            }
+
+            timeout = aiohttp.ClientTimeout(total=5.0)
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(endpoint, json=payload) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        logger.info(
+                            "Detection result: %s (confidence: %.2f%%)",
+                            result.get("predicted_class"),
+                            float(result.get("confidence", 0.0)) * 100.0,
+                        )
+                        await self._send_to_policy_engine(result)
+                    else:
+                        logger.error(f"Detection service error: {response.status}")
+
+        except Exception as e:
+            logger.error(f"Failed to send to detection service: {e}")
+
+    async def _send_to_policy_engine(self, detection_result: dict):
+        """Send detection output to policy engine (placeholder)."""
+        return
     
     def start(self):
         """Start the feature extraction service"""

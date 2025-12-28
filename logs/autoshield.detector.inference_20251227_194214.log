@@ -1,0 +1,26 @@
+2025-12-27 19:42:14 - autoshield.detector.inference - INFO - Model loaded: optimized with config {'input_features': 12, 'sequence_length': 20, 'num_classes': 4, 'hidden_size': 32, 'dropout_rate': 0.2, 'use_batch_norm': True}
+2025-12-27 19:42:14 - autoshield.detector.inference - INFO - Warming up model...
+2025-12-27 19:42:15 - autoshield.detector.inference - INFO - Warmup complete. Initial latency: 6.75ms
+2025-12-27 19:42:15 - autoshield.detector.inference - INFO - Inference service initialized on cpu
+2025-12-27 19:42:15 - autoshield.detector.inference - INFO - Model loaded from: C:\Users\HP\OneDrive\Documents\autoshield-k8s\data\models\optimized\20251227_135238\final_model.pth
+2025-12-27 19:42:16 - autoshield.detector.inference - INFO - Model loaded: optimized with config {'input_features': 12, 'sequence_length': 20, 'num_classes': 4, 'hidden_size': 32, 'dropout_rate': 0.2, 'use_batch_norm': True}
+2025-12-27 19:42:16 - autoshield.detector.inference - INFO - Warming up model...
+2025-12-27 19:42:16 - autoshield.detector.inference - INFO - Warmup complete. Initial latency: 6.26ms
+2025-12-27 19:42:16 - autoshield.detector.inference - INFO - Inference service initialized on cpu
+2025-12-27 19:42:16 - autoshield.detector.inference - INFO - Model loaded from: C:\Users\HP\OneDrive\Documents\autoshield-k8s\data\models\optimized\20251227_135238\final_model.pth
+2025-12-27 19:42:16 - autoshield.detector.inference - INFO - Model loaded: optimized with config {'input_features': 12, 'sequence_length': 20, 'num_classes': 4, 'hidden_size': 32, 'dropout_rate': 0.2, 'use_batch_norm': True}
+2025-12-27 19:42:16 - autoshield.detector.inference - INFO - Warming up model...
+2025-12-27 19:42:17 - autoshield.detector.inference - INFO - Warmup complete. Initial latency: 6.96ms
+2025-12-27 19:42:17 - autoshield.detector.inference - INFO - Inference service initialized on cpu
+2025-12-27 19:42:17 - autoshield.detector.inference - INFO - Model loaded from: C:\Users\HP\OneDrive\Documents\autoshield-k8s\data\models\optimized\20251227_135238\final_model.pth
+2025-12-27 19:42:17 - autoshield.detector.inference - INFO - Batch inference: 5 windows in 34.80ms (avg 6.96ms/window)
+2025-12-27 19:42:17 - autoshield.detector.inference - INFO - Model loaded: optimized with config {'input_features': 12, 'sequence_length': 20, 'num_classes': 4, 'hidden_size': 32, 'dropout_rate': 0.2, 'use_batch_norm': True}
+2025-12-27 19:42:17 - autoshield.detector.inference - INFO - Warming up model...
+2025-12-27 19:42:18 - autoshield.detector.inference - INFO - Warmup complete. Initial latency: 6.51ms
+2025-12-27 19:42:18 - autoshield.detector.inference - INFO - Inference service initialized on cpu
+2025-12-27 19:42:18 - autoshield.detector.inference - INFO - Model loaded from: C:\Users\HP\OneDrive\Documents\autoshield-k8s\data\models\optimized\20251227_135238\final_model.pth
+2025-12-27 19:42:19 - autoshield.detector.inference - INFO - Model loaded: optimized with config {'input_features': 12, 'sequence_length': 20, 'num_classes': 4, 'hidden_size': 32, 'dropout_rate': 0.2, 'use_batch_norm': True}
+2025-12-27 19:42:19 - autoshield.detector.inference - INFO - Warming up model...
+2025-12-27 19:42:20 - autoshield.detector.inference - INFO - Warmup complete. Initial latency: 6.04ms
+2025-12-27 19:42:20 - autoshield.detector.inference - INFO - Inference service initialized on cpu
+2025-12-27 19:42:20 - autoshield.detector.inference - INFO - Model loaded from: C:\Users\HP\OneDrive\Documents\autoshield-k8s\data\models\optimized\20251227_135238\final_model.pth

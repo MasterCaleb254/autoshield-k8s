@@ -17,3 +17,8 @@ line-length = 88
 
 [tool.mypy]
 python_version = "3.9"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests that require external services (deselect with '-m \"not integration\"')",
+]

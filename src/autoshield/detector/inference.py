@@ -9,14 +9,30 @@ import asyncio
 from typing import Dict, Any, List, Optional
 import time
 import json
+import os
 import logging
 from datetime import datetime
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
-import uvicorn
-import grpc
-from concurrent import futures
+try:
+    from fastapi import FastAPI, HTTPException, BackgroundTasks
+    from fastapi.responses import JSONResponse
+except Exception:  # pragma: no cover
+    FastAPI = None
+    HTTPException = None
+    BackgroundTasks = None
+    JSONResponse = None
+
+try:
+    import uvicorn
+except Exception:  # pragma: no cover
+    uvicorn = None
+
+try:
+    import grpc
+    from concurrent import futures
+except Exception:  # pragma: no cover
+    grpc = None
+    futures = None
 
 from .model import create_model
 from ..models import FlowWindow
@@ -77,24 +93,47 @@ class ModelInferenceService:
         """Warm up the model for stable latency"""
         logger.info("Warming up model...")
         
-        # Create dummy input
-        dummy_input = torch.randn(1, 1, 12).to(self.device)  # [batch, seq_len, features]
+        # Create dummy input that matches the model's expected sequence length.
+        # Using seq_len=1 will break the CNN pooling stack (e.g. output size 0).
+        seq_len = int(getattr(self.model, "sequence_length", 1))
+        input_features = int(getattr(self.model, "input_features", 12))
+        dummy_input = torch.randn(1, seq_len, input_features).to(self.device)  # [batch, seq_len, features]
         
         with torch.no_grad():
             for _ in range(num_iterations):
                 _ = self.model.predict(dummy_input)
-        
-        # Measure initial latency
-        latencies = []
-        for _ in range(100):
-            start = time.perf_counter()
-            _ = self.model.predict(dummy_input)
-            latencies.append((time.perf_counter() - start) * 1000)
-        
-        self.stats["avg_latency_ms"] = np.mean(latencies)
-        self.stats["p95_latency_ms"] = np.percentile(latencies, 95)
-        
-        logger.info(f"Warmup complete. Initial latency: {self.stats['avg_latency_ms']:.2f}ms")
+
+        # Measuring latency at startup is expensive and can cause Kubernetes probes
+        # to fail before the service becomes ready. Only do it when explicitly enabled.
+        measure_startup_latency = os.getenv("MEASURE_STARTUP_LATENCY", "false").lower() == "true"
+        if measure_startup_latency:
+            num_samples = int(os.getenv("STARTUP_LATENCY_SAMPLES", "50"))
+            latencies = []
+            for _ in range(max(1, num_samples)):
+                start = time.perf_counter()
+                _ = self.model.predict(dummy_input)
+                latencies.append((time.perf_counter() - start) * 1000)
+
+            self.stats["avg_latency_ms"] = float(np.mean(latencies))
+            self.stats["p95_latency_ms"] = float(np.percentile(latencies, 95))
+            logger.info(f"Warmup complete. Initial latency: {self.stats['avg_latency_ms']:.2f}ms")
+        else:
+            logger.info("Warmup complete.")
+    
+    def _features_to_model_input(self, features: List[float], batch_size: int = 1) -> torch.Tensor:
+        """Convert a single feature vector into a model input tensor.
+
+        The CNN-LSTM expects 3D input: [batch, seq_len, features].
+        For single-window inference, we repeat the feature vector across seq_len.
+        """
+        seq_len = int(getattr(self.model, "sequence_length", 1))
+        x = torch.tensor(features, dtype=torch.float32, device=self.device)
+        x = x.unsqueeze(0).unsqueeze(0)  # [1, 1, features]
+        if seq_len > 1:
+            x = x.repeat(1, seq_len, 1)  # [1, seq_len, features]
+        if batch_size != 1:
+            x = x.repeat(batch_size, 1, 1)
+        return x
     
     async def predict_single(self, window: FlowWindow) -> Dict[str, Any]:
         """Predict on a single flow window"""
@@ -103,8 +142,7 @@ class ModelInferenceService:
             
             # Convert to tensor
             features = window.to_feature_vector()
-            features_tensor = torch.FloatTensor(features).unsqueeze(0).unsqueeze(0)  # [1, 1, 12]
-            features_tensor = features_tensor.to(self.device)
+            features_tensor = self._features_to_model_input(features)  # [1, seq_len, features]
             
             # Run inference
             with torch.no_grad():
@@ -177,9 +215,11 @@ class ModelInferenceService:
                 batch_features.append(features)
             
             # Convert to tensor
-            batch_tensor = torch.FloatTensor(batch_features)
+            seq_len = int(getattr(self.model, "sequence_length", 1))
+            batch_tensor = torch.tensor(batch_features, dtype=torch.float32, device=self.device)  # [batch, features]
             batch_tensor = batch_tensor.unsqueeze(1)  # [batch, 1, features]
-            batch_tensor = batch_tensor.to(self.device)
+            if seq_len > 1:
+                batch_tensor = batch_tensor.repeat(1, seq_len, 1)  # [batch, seq_len, features]
             
             # Run inference
             with torch.no_grad():
@@ -279,7 +319,9 @@ class ModelInferenceService:
         """Health check for the service"""
         try:
             # Test with dummy input
-            dummy_input = torch.randn(1, 1, 12).to(self.device)
+            seq_len = int(getattr(self.model, "sequence_length", 1))
+            input_features = int(getattr(self.model, "input_features", 12))
+            dummy_input = torch.randn(1, seq_len, input_features).to(self.device)
             with torch.no_grad():
                 _ = self.model.predict(dummy_input)
             

@@ -34,7 +34,7 @@ metadata:
     app: autoshield
     component: inference
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: autoshield
@@ -48,7 +48,7 @@ spec:
       serviceAccountName: inference-service
       containers:
       - name: inference-service
-        image: autoshield/inference:latest
+        image: autoshield/inference:dev
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
@@ -58,15 +58,10 @@ spec:
         env:
         - name: USE_GPU
           value: "false"  # Set to "true" if GPU nodes available
-        - name: MODEL_PATH
-          value: "/app/data/models/cnn-lstm/latest/final_model.pth"
         resources:
           requests:
             memory: "512Mi"
             cpu: "500m"
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
         readinessProbe:
           httpGet:
             path: /health
@@ -79,21 +74,3 @@ spec:
             port: 8000
           initialDelaySeconds: 30
           periodSeconds: 10
-        volumeMounts:
-        - name: model-storage
-          mountPath: /app/data/models
-          readOnly: true
-      volumes:
-      - name: model-storage
-        configMap:
-          name: model-config
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: model-config
-  namespace: autoshield-system
-data:
-  # In production, models would be stored in object storage
-  # and downloaded on startup
-  model-path: "/app/data/models/cnn-lstm"

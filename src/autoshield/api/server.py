@@ -54,14 +54,24 @@ async def startup_event():
         import os
         from pathlib import Path
         
-        # Find latest model
-        model_dir = Path("data/models/cnn-lstm")
-        model_files = list(model_dir.glob("**/final_model.pth"))
-        
-        if not model_files:
-            raise FileNotFoundError("No trained model found")
-        
-        latest_model = max(model_files, key=lambda x: x.stat().st_mtime)
+        # Prefer explicit model path when provided (e.g. via Kubernetes env var)
+        model_path_env = os.getenv("MODEL_PATH")
+        latest_model: Path
+        if model_path_env:
+            candidate = Path(model_path_env)
+            if candidate.exists() and candidate.is_file():
+                latest_model = candidate
+            else:
+                raise FileNotFoundError(f"MODEL_PATH not found: {model_path_env}")
+        else:
+            # Fall back to scanning baked-in model directory
+            model_dir = Path("data/models")
+            model_files = list(model_dir.glob("**/final_model.pth"))
+            
+            if not model_files:
+                raise FileNotFoundError("No trained model found under data/models/**/final_model.pth")
+            
+            latest_model = max(model_files, key=lambda x: x.stat().st_mtime)
         
         _inference_service = ModelInferenceService(
             model_path=str(latest_model),
