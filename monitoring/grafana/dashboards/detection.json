@@ -1,0 +1,77 @@
+# monitoring/grafana/dashboards/detection.json
+{
+  "title": "AutoShield Detection Details",
+  "tags": ["autoshield", "detection", "security"],
+  "panels": [
+    {
+      "title": "Confidence Score Distribution",
+      "type": "heatmap",
+      "targets": [{
+        "expr": "sum(rate(autoshield_detection_confidence_sum[5m])) / sum(rate(autoshield_detection_confidence_count[5m]))",
+        "legendFormat": "Avg Confidence"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        }
+      },
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 0}
+    },
+    {
+      "title": "False Positive Rate",
+      "type": "timeseries",
+      "targets": [{
+        "expr": "rate(autoshield_false_positives_total[5m]) / rate(autoshield_attacks_detected_total[5m])",
+        "legendFormat": "False Positive Rate"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 0.1},
+              {"color": "red", "value": 0.2}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10}
+    },
+    {
+      "title": "Detection Latency Breakdown",
+      "type": "bargauge",
+      "targets": [{
+        "expr": "histogram_quantile(0.95, rate(autoshield_inference_latency_seconds_bucket[5m]))",
+        "legendFormat": "P95 Inference"
+      }, {
+        "expr": "histogram_quantile(0.95, rate(autoshield_processing_latency_seconds_bucket[5m]))",
+        "legendFormat": "P95 Total"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "max": 0.1,
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 0.001},
+              {"color": "red", "value": 0.005}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10}
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 36,
+  "version": 1
+}

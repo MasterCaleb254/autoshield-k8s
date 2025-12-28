@@ -1,0 +1,107 @@
+# monitoring/grafana/dashboards/overview.json
+{
+  "title": "AutoShield-K8s Overview",
+  "tags": ["autoshield", "security", "kubernetes"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "title": "Windows Processed",
+      "type": "stat",
+      "targets": [{
+        "expr": "rate(autoshield_windows_processed_total[5m])",
+        "legendFormat": "Windows/s"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+    },
+    {
+      "title": "Attack Detection Rate",
+      "type": "stat",
+      "targets": [{
+        "expr": "rate(autoshield_attacks_detected_total[5m])",
+        "legendFormat": "Attacks/s"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "red", "value": 1}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+    },
+    {
+      "title": "Attack Class Distribution",
+      "type": "piechart",
+      "targets": [{
+        "expr": "autoshield_attack_class_distribution",
+        "legendFormat": "{{attack_class}}"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 8}
+    },
+    {
+      "title": "Inference Latency",
+      "type": "timeseries",
+      "targets": [{
+        "expr": "histogram_quantile(0.95, rate(autoshield_inference_latency_seconds_bucket[5m]))",
+        "legendFormat": "P95"
+      }, {
+        "expr": "histogram_quantile(0.50, rate(autoshield_inference_latency_seconds_bucket[5m]))",
+        "legendFormat": "P50"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0
+        }
+      },
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 8}
+    },
+    {
+      "title": "Processing Queue Size",
+      "type": "timeseries",
+      "targets": [{
+        "expr": "autoshield_processing_queue_size",
+        "legendFormat": "Queue Size"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {"mode": "palette-classic"}
+        }
+      },
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 18}
+    },
+    {
+      "title": "Action Execution Status",
+      "type": "barchart",
+      "targets": [{
+        "expr": "sum by (action_type, status) (rate(autoshield_actions_executed_total[5m]))",
+        "legendFormat": "{{action_type}} - {{status}}"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        }
+      },
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 26}
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 36,
+  "version": 1
+}
