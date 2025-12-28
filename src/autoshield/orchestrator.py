@@ -16,6 +16,9 @@ from .policy.engine import PolicyEngine
 from .actuator.kubernetes import KubernetesActuator
 from .observability.explainer import ExplainabilityEngine
 from .observability.auditor import AuditLogger
+from .dashboard.api import broadcast_detection_event, broadcast_action_event
+from .observability.metrics import init_metrics
+from .observability.alerts import AlertManager, AlertSeverity
 
 logger = setup_logger(__name__)
 
@@ -25,13 +28,25 @@ class AutoShieldOrchestrator:
     def __init__(self, 
                  model_path: str,
                  policy_file: str = "config/policies/default.yaml",
-                 enable_actuation: bool = True):
+                 enable_actuation: bool = True,
+                 enable_dashboard: bool = True):
         
         # Initialize components
         logger.info("Initializing AutoShield orchestrator...")
         
+        # Track attack distribution
+        self.attack_distribution = defaultdict(int)
+        self.stats = {
+            "total_windows_processed": 0,
+            "attacks_detected": 0,
+            "actions_executed": 0,
+            "false_positives": 0,
+            "avg_processing_time_ms": 0,
+            "start_time": datetime.now().isoformat()
+        }
+        
         # Inference service
-        self.inference_service = ModelInferenceService(model_path=model_path)
+        self.inference_service = ModelInferenceService(model_path=model_path) 
         logger.info("✓ Inference service initialized")
         
         # Policy engine
@@ -47,74 +62,109 @@ class AutoShieldOrchestrator:
             self.actuator = None
             logger.info("⚠ Actuation disabled (monitor mode)")
         
+        # Initialize observability
+        if enable_dashboard:
+            self.metrics = init_metrics(port=9090)
+            self.alert_manager = AlertManager()
+            
+            self._broadcast_detection = broadcast_detection_event
+            self._broadcast_action = broadcast_action_event
+            logger.info("✓ Dashboard and metrics initialized")
+        
         # Observability
         self.explainer = ExplainabilityEngine()
         self.audit_logger = AuditLogger()
         logger.info("✓ Observability components initialized")
         
         # Statistics
-        self.stats = {
-            "total_windows_processed": 0,
-            "attacks_detected": 0,
-            "actions_executed": 0,
-            "false_positives": 0,
-            "avg_processing_time_ms": 0,
-            "start_time": datetime.now().isoformat()
-        }
-        
-        # Processing queue
         self.processing_queue = asyncio.Queue(maxsize=1000)
         
         logger.info("✅ AutoShield orchestrator ready")
     
     async def process_window(self, window_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Process a single flow window through the entire pipeline.
-        
-        Returns:
-            Processing result with detection and action info
-        """
+        """Process window with observability integration"""
         start_time = time.time()
+        result = {"timestamp": datetime.utcnow().isoformat()}
         
         try:
-            self.stats["total_windows_processed"] += 1
+            # 1. Run inference
+            detection_result = await self.inference_service.predict_single(window_data)
+            result["detection"] = detection_result
             
-            # Step 1: Create FlowWindow object
-            from .models import FlowWindow
-            window = FlowWindow(**window_data)
-            
-            # Step 2: Run inference
-            detection_result = await self.inference_service.predict_single(window)
-            
-            # Step 3: Evaluate policy
-            policy_decision = self.policy_engine.evaluate(detection_result)
-            
-            result = {
-                "window_id": window.window_id,
-                "src_pod": window.src_pod,
-                "dst_pod": window.dst_pod,
-                "detection_result": detection_result,
-                "policy_decision": policy_decision,
-                "timestamp": datetime.now().isoformat()
-            }
-            
-            # Step 4: Execute action if policy says so
-            if policy_decision and self.actuator:
-                action_result = self.actuator.execute_action(
-                    action_config=policy_decision['action_config'],
-                    detection_result=detection_result
+            # Update metrics
+            if hasattr(self, 'metrics'):
+                self.metrics.record_window_processed()
+                self.metrics.record_processing_latency(
+                    (time.time() - start_time)
                 )
                 
-                result["action_result"] = action_result
-                
-                if action_result.get('status') == 'success':
-                    self.stats["actions_executed"] += 1
-                    self.stats["attacks_detected"] += 1
-                elif action_result.get('status') == 'blocked':
-                    logger.info(f"Action blocked by safety controller: {window.window_id}")
+                if detection_result.get('predicted_class') != 'NORMAL':
+                    self.metrics.record_attack_detected(
+                        detection_result['predicted_class'],
+                        detection_result['confidence']
+                    )
+                    
+                    # Update attack distribution
+                    attack_class = detection_result['predicted_class']
+                    self.attack_distribution[attack_class] += 1
+                    if hasattr(self.metrics, 'update_attack_distribution'):
+                        self.metrics.update_attack_distribution(
+                            dict(self.attack_distribution)
+                        )
             
-            # Step 5: Generate enhanced explainability
-            enhanced_explanation = self.explainer.enhance_explanation(
+            # Broadcast to dashboard
+            if hasattr(self, '_broadcast_detection'):
+                self._broadcast_detection(detection_result)
+            
+            # 2. Apply policy
+            policy_decision = self.policy_engine.evaluate(detection_result)
+            if policy_decision:
+                result["policy_decision"] = policy_decision
+                
+                # 3. Execute action if enabled
+                if self.enable_actuation and self.actuator:
+                    action_result = self.actuator.execute_action(
+                        action_config=policy_decision["action_config"],
+                        detection_result=detection_result
+                    )
+                    result["action_result"] = action_result
+                    
+                    # Update metrics for action
+                    if hasattr(self, 'metrics'):
+                        self.metrics.record_action_executed(
+                            action_result.get('action_type', 'unknown'),
+                            action_result.get('status', 'unknown')
+                        )
+                    
+                    # Broadcast action to dashboard
+                    if hasattr(self, '_broadcast_action'):
+                        self._broadcast_action(action_result)
+                    
+                    # Create alert for critical actions
+                    if hasattr(self, 'alert_manager'):
+                        if action_result.get('status') == 'success':
+                            severity = {
+                                'network_policy': 'WARNING',
+                                'pod_isolation': 'ERROR',
+                                'pod_termination': 'CRITICAL'
+                            }.get(action_result.get('action_type'), 'INFO')
+                            
+                            self.alert_manager.create_alert(
+                                title=f"Mitigation Action: {action_result.get('action_type')}",
+                                message=f"Action executed on {action_result.get('target')}",
+                                severity=severity,
+                                metadata=action_result
+                            )
+            
+            # Evaluate alert rules
+            if hasattr(self, 'alert_manager'):
+                context = {
+                    'confidence': detection_result.get('confidence'),
+                    'attack_class': detection_result.get('predicted_class'),
+                    'false_positives': self.stats.get('false_positives', 0),
+                    'system_status': 'healthy'  # Simplified
+                }
+                self.alert_manager.evaluate_alert_rules(context)
                 detection_result, 
                 policy_decision,
                 result.get('action_result')
