@@ -1,0 +1,111 @@
+# deployment/orchestrator.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: orchestrator
+  namespace: autoshield-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: orchestrator
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "nodes"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["cilium.io"]
+  resources: ["ciliumnetworkpolicies"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: orchestrator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: orchestrator
+subjects:
+- kind: ServiceAccount
+  name: orchestrator
+  namespace: autoshield-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator
+  namespace: autoshield-system
+  labels:
+    app: autoshield
+    component: orchestrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autoshield
+      component: orchestrator
+  template:
+    metadata:
+      labels:
+        app: autoshield
+        component: orchestrator
+    spec:
+      serviceAccountName: orchestrator
+      containers:
+      - name: orchestrator
+        image: autoshield/orchestrator:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: MODEL_PATH
+          value: "/app/data/models/cnn-lstm/latest/final_model.pth"
+        - name: POLICY_FILE
+          value: "/app/config/policies/default.yaml"
+        - name: ENABLE_ACTUATION
+          value: "true"
+        - name: LOG_LEVEL
+          value: "INFO"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/data/models
+          readOnly: true
+        - name: policy-config
+          mountPath: /app/config/policies
+          readOnly: true
+        - name: audit-logs
+          mountPath: /app/logs
+      volumes:
+      - name: model-storage
+        configMap:
+          name: model-config
+      - name: policy-config
+        configMap:
+          name: autoshield-policies
+      - name: audit-logs
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator
+  namespace: autoshield-system
+spec:
+  selector:
+    app: autoshield
+    component: orchestrator
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
