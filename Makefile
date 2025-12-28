@@ -1,4 +1,4 @@
-.PHONY: help install test build deploy clean build-inference deploy-inference test-inference run-api generate-data explore-data test-dataset train-model evaluate-model optimize-model benchmark-latency deploy-policy-engine deploy-all test-pipeline run-demo monitor-actions rollback-action
+.PHONY: help install test build deploy clean build-inference deploy-inference test-inference run-api generate-data explore-data test-dataset train-model evaluate-model optimize-model benchmark-latency deploy-policy-engine deploy-all test-pipeline run-demo monitor-actions rollback-action build-dashboard deploy-dashboard deploy-monitoring open-dashboard view-metrics test-dashboard deploy-complete
 
 help:
 	@echo "AutoShield-K8s Commands:"
@@ -9,7 +9,14 @@ help:
 	@echo "  deploy      Deploy to Kubernetes"
 	@echo "  deploy-inference Deploy inference service to Kubernetes"
 	@echo "  deploy-policy-engine Deploy policy engine/orchestrator to Kubernetes"
-	@echo "  deploy-all  Deploy inference + policy engine/orchestrator"
+	@echo "  deploy-all  Deploy inference + policy engine/orchestrator + dashboard
+  build-dashboard  Build dashboard Docker image
+  deploy-dashboard  Deploy dashboard to Kubernetes
+  deploy-monitoring  Deploy monitoring stack (Prometheus)
+  open-dashboard  Open dashboard in browser
+  view-metrics  View Prometheus metrics
+  test-dashboard  Test dashboard health
+  deploy-complete  Deploy all components (inference, policy, dashboard, monitoring)"
 	@echo "  test-inference   Run inference integration tests"
 	@echo "  test-pipeline    Run end-to-end pipeline test"
 	@echo "  run-api     Start FastAPI inference API server"
@@ -53,11 +60,61 @@ deploy-policy-engine:
 	bash src/scripts/deploy-policy-engine.sh
 	@echo "✅ Policy engine/orchestrator deployed"
 
+# Dashboard and Monitoring
+build-dashboard:
+	@echo "Building dashboard..."
+	docker build -f docker/dashboard.Dockerfile -t autoshield/dashboard:latest .
+
+# Deployment targets
+deploy-dashboard:
+	@echo "Deploying dashboard..."
+	kubectl apply -f deployment/dashboard.yaml
+	@echo "✅ Dashboard deployed"
+
+deploy-monitoring:
+	@echo "Deploying monitoring stack..."
+	kubectl apply -f monitoring/prometheus/prometheus.yaml
+	@echo "✅ Monitoring stack deployed"
+
 deploy-all:
+	@echo "Deploying AutoShield core components..."
+	make deploy-inference
+	make deploy-policy-engine
+	@echo "✅ Core components deployed"
+
+deploy-complete:
 	@echo "Deploying complete AutoShield system..."
 	make deploy-inference
 	make deploy-policy-engine
+	make deploy-dashboard
+	make deploy-monitoring
 	@echo "✅ All components deployed"
+	@echo "Dashboard: http://localhost:8081"
+	@echo "Metrics: http://localhost:9090/metrics"
+
+# Dashboard utilities
+open-dashboard:
+	@echo "Opening dashboard..."
+	@if command -v xdg-open > /dev/null; then \
+		xdg-open http://localhost:8081; \
+	elif command -v open > /dev/null; then \
+		open http://localhost:8081; \
+	else \
+		echo "Open http://localhost:8081 in your browser"; \
+	fi
+
+view-metrics:
+	@echo "Viewing metrics..."
+	@curl -s http://localhost:9090/metrics | head -50
+
+test-dashboard:
+	@echo "Testing dashboard..."
+	@if curl -s -f http://localhost:8081/health > /dev/null; then \
+		echo "✅ Dashboard healthy"; \
+	else \
+		echo "❌ Dashboard unhealthy"; \
+		exit 1; \
+	fi
 
 test-inference:
 	@echo "Testing inference service..."
