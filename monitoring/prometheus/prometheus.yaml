@@ -1,0 +1,55 @@
+# monitoring/prometheus/prometheus.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: autoshield
+  namespace: autoshield-system
+  labels:
+    app: autoshield
+spec:
+  serviceAccountName: prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      app: autoshield
+  resources:
+    requests:
+      memory: "400Mi"
+    limits:
+      memory: "800Mi"
+  enableAdminAPI: false
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: autoshield-metrics
+  namespace: autoshield-system
+  labels:
+    app: autoshield
+spec:
+  selector:
+    matchLabels:
+      app: autoshield
+  endpoints:
+  - port: metrics
+    interval: 15s
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - autoshield-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-operated
+  namespace: autoshield-system
+  labels:
+    app: autoshield
+spec:
+  ports:
+  - name: web
+    port: 9090
+    targetPort: web
+  selector:
+    prometheus: autoshield
+    app: autoshield
+  type: ClusterIP
