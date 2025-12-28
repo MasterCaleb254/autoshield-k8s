@@ -235,7 +235,6 @@ USE_GPU=false                  # GPU acceleration
 ## 🧪 **Testing & Validation**
 
 ### **Run Complete Test Suite**
-
 ```bash
 # Unit tests
 make test-unit
@@ -369,7 +368,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### **Development Setup**
 ```bash
 # 1. Fork and clone
-git clone https://github.com/MasterCaleb254S/autoshield-k8s.git
+git clone https://github.com/your-username/autoshield-k8s.git
 cd autoshield-k8s
 
 # 2. Create virtual environment
@@ -464,7 +463,7 @@ policies:
 
 ## 📞 **Support & Community**
 
-- **GitHub Issues**: [Bug reports & feature requests](https://github.com/MasterCaleb254/autoshield-k8s/issues)
+- **GitHub Issues**: [Bug reports & feature requests](https://github.com/your-org/autoshield-k8s/issues)
 - **Discord**: [Community chat](https://discord.gg/autoshield)
 - **Stack Overflow**: Tag questions with `autoshield-k8s`
 - **Email**: support@autoshield.dev
