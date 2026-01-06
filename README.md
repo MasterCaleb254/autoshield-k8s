@@ -112,7 +112,7 @@ graph TB
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/autoshield-k8s.git
+git clone https://github.com/MasterCaleb254/autoshield-k8s.git
 cd autoshield-k8s
 
 # Deploy complete system
